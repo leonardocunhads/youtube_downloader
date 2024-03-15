@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from tkinter import ttk
+from tkinter.filedialog import askdirectory
 from pytube import YouTube
 import os
 
@@ -11,7 +12,6 @@ def download_video():
     progress_label.pack(padx="10p", pady="5p")
     progress_bar.pack(padx="10p", pady="5p")
     status_label.pack(padx="10p", pady="5p")
-
 
     try:
         yt = YouTube(url, on_progress_callback=on_progress)
@@ -33,6 +33,7 @@ def on_progress(stream, chunk, bytes_remaining):
     percentage_completed = bytes_downloaded / total_size * 100
     print(percentage_completed)
 
+    
     progress_label.configure(text= str(int(percentage_completed)) + "%")
     progress_label.update()
 
