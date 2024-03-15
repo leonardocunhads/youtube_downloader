@@ -9,21 +9,25 @@ def download_video():
     url = entry_url.get()
     resolution = resolution_var.get()
 
-    progress_label.pack(padx="10p", pady="5p")
-    progress_bar.pack(padx="10p", pady="5p")
-    status_label.pack(padx="10p", pady="5p")
-
     try:
         yt = YouTube(url, on_progress_callback=on_progress)
         stream = yt.streams.filter(res=resolution).first()
 
         # download the video into a specific directory
-        os.path.join("downloads", f"{yt.title}.mp4")
-        stream.download(output_path="downloads")
-        status_label.configure(text="Downloaded!", text_color="white", fg_color="green")
+        download_path = askdirectory()
+        if os.path.exists(download_path):
+            print(download_path)
+            progress_label.pack(padx="10p", pady="5p")
+            progress_bar.pack(padx="10p", pady="5p")
+            status_label.pack(padx="10p", pady="5p")
+            os.path.join(download_path, f"{yt.title}.mp4")
+            stream.download(output_path=download_path)
+            
+        else:    
+            status_label.configure(text="Choose a valid Directory!", text_color="white", fg_color="orange")
 
     except Exception as e:
-
+        status_label.pack(padx="10p", pady="5p")
         status_label.configure(text= f"Error {str(e)}", text_color="white", fg_color="red")
 
 
@@ -31,9 +35,11 @@ def on_progress(stream, chunk, bytes_remaining):
     total_size = stream.filesize
     bytes_downloaded = total_size - bytes_remaining
     percentage_completed = bytes_downloaded / total_size * 100
+    if percentage_completed == 100.0:
+        status_label.configure(text="Downloaded!", text_color="white", fg_color="green")
     print(percentage_completed)
 
-    
+
     progress_label.configure(text= str(int(percentage_completed)) + "%")
     progress_label.update()
 
@@ -75,15 +81,15 @@ resolution_combobox.set("720p")
 
 # create a label and the progress bar to display the download progress
 progress_label = ctk.CTkLabel(content_frame, text="")
-#progress_label.pack(padx="10p", pady="5p")
+progress_label.pack(padx="0p", pady="0p")
 
 progress_bar = ctk.CTkProgressBar(content_frame, width=400)
 progress_bar.set(0)
-#progress_bar.pack(padx="10p", pady="5p")
+progress_bar.pack(padx="0p", pady="0p")
 
 # create the status label
 status_label = ctk.CTkLabel(content_frame, text="")
-#status_label.pack(padx="10p", pady="5p")
+status_label.pack(padx="0p", pady="0p")
 
 
 # start the app
