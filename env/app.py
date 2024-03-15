@@ -14,7 +14,7 @@ def download_video():
 
 
     try:
-        yt = YouTube(url)
+        yt = YouTube(url, on_progress_callback=on_progress)
         stream = yt.streams.filter(res=resolution).first()
 
         # download the video into a specific directory
@@ -26,6 +26,17 @@ def download_video():
 
         status_label.configure(text= f"Error {str(e)}", text_color="white", fg_color="red")
 
+
+def on_progress(stream, chunk, bytes_remaining):
+    total_size = stream.filesize
+    bytes_downloaded = total_size - bytes_remaining
+    percentage_completed = bytes_downloaded / total_size * 100
+    print(percentage_completed)
+
+    progress_label.configure(text= str(int(percentage_completed)) + "%")
+    progress_label.update()
+
+    progress_bar.set(float(percentage_completed / 100))
 
 # create a root window
 root = ctk.CTk()
@@ -62,15 +73,15 @@ resolution_combobox.pack(padx="10p", pady="5p")
 resolution_combobox.set("720p")
 
 # create a label and the progress bar to display the download progress
-progress_label = ctk.CTkLabel(content_frame, text="0%")
+progress_label = ctk.CTkLabel(content_frame, text="")
 #progress_label.pack(padx="10p", pady="5p")
 
 progress_bar = ctk.CTkProgressBar(content_frame, width=400)
-progress_bar.set(0.6)
+progress_bar.set(0)
 #progress_bar.pack(padx="10p", pady="5p")
 
 # create the status label
-status_label = ctk.CTkLabel(content_frame, text="Downloaded")
+status_label = ctk.CTkLabel(content_frame, text="")
 #status_label.pack(padx="10p", pady="5p")
 
 
